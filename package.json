@@ -1,0 +1,14 @@
+{
+  "name": "llm4rec-hw6",
+  "version": "1.0.0",
+  "private": true,
+  "description": "HW6 Personalized PageRank (LLM4Rec, HSE). The page runs in the browser; this file is only for the offline analysis in analysis/.",
+  "scripts": {
+    "evaluate": "node analysis/evaluate.js",
+    "export-mf": "node analysis/export_hw5_checkpoint.js"
+  },
+  "dependencies": {
+    "@tensorflow/tfjs": "4.22.0",
+    "@tensorflow/tfjs-backend-wasm": "4.22.0"
+  }
+}

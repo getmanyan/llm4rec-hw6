@@ -1,0 +1,101 @@
+user_id,method,alpha,rank,movie_id,title,genres,score,training_popularity
+10,popularity,,1,181,Return of the Jedi (1983),Action;Adventure;Romance;Sci-Fi;War,339,339
+10,popularity,,2,258,Contact (1997),Drama;Sci-Fi,307,307
+10,popularity,,3,172,"Empire Strikes Back, The (1980)",Action;Adventure;Drama;Romance;Sci-Fi;War,261,261
+10,popularity,,4,300,Air Force One (1997),Action;Thriller,235,235
+10,popularity,,5,79,"Fugitive, The (1993)",Action;Thriller,230,230
+10,popularity,,6,288,Scream (1996),Horror;Thriller,226,226
+10,popularity,,7,318,Schindler's List (1993),Drama;War,224,224
+10,popularity,,8,173,"Princess Bride, The (1987)",Action;Adventure;Comedy;Romance,222,222
+10,popularity,,9,313,Titanic (1997),Action;Drama;Romance,219,219
+10,popularity,,10,237,Jerry Maguire (1996),Drama;Romance,217,217
+102,popularity,,1,100,Fargo (1996),Crime;Drama;Thriller,377,377
+102,popularity,,2,64,"Shawshank Redemption, The (1994)",Drama,228,228
+102,popularity,,3,318,Schindler's List (1993),Drama;War,224,224
+102,popularity,,4,237,Jerry Maguire (1996),Drama;Romance,217,217
+102,popularity,,5,22,Braveheart (1995),Action;Drama;War,214,214
+102,popularity,,6,69,Forrest Gump (1994),Comedy;Romance;War,206,206
+102,popularity,,7,12,"Usual Suspects, The (1995)",Crime;Thriller,205,205
+102,popularity,,8,357,One Flew Over the Cuckoo's Nest (1975),Drama,202,202
+102,popularity,,9,483,Casablanca (1942),Drama;Romance;War,197,197
+102,popularity,,10,191,Amadeus (1984),Drama;Mystery,194,194
+10,pagerank,0.50,1,258,Contact (1997),Drama;Sci-Fi,0.0023751864209771156,307
+10,pagerank,0.50,2,313,Titanic (1997),Action;Drama;Romance,0.0020634266547858715,219
+10,pagerank,0.50,3,300,Air Force One (1997),Action;Thriller,0.002003419678658247,235
+10,pagerank,0.50,4,181,Return of the Jedi (1983),Action;Adventure;Romance;Sci-Fi;War,0.0019889408722519875,339
+10,pagerank,0.50,5,288,Scream (1996),Horror;Thriller,0.0018683739472180605,226
+10,pagerank,0.50,6,294,Liar Liar (1997),Comedy,0.001488346722908318,182
+10,pagerank,0.50,7,237,Jerry Maguire (1996),Drama;Romance,0.0013290398055687547,217
+10,pagerank,0.50,8,172,"Empire Strikes Back, The (1980)",Action;Adventure;Drama;Romance;Sci-Fi;War,0.0013182982802391052,261
+10,pagerank,0.50,9,117,"Rock, The (1996)",Action;Adventure;Thriller,0.0013080040225759149,215
+10,pagerank,0.50,10,121,Independence Day (ID4) (1996),Action;Sci-Fi;War,0.0012972895056009293,207
+102,pagerank,0.50,1,100,Fargo (1996),Crime;Drama;Thriller,0.002271695528179407,377
+102,pagerank,0.50,2,237,Jerry Maguire (1996),Drama;Romance,0.0013290398055687547,217
+102,pagerank,0.50,3,268,Chasing Amy (1997),Drama;Romance,0.0012656085891649127,146
+102,pagerank,0.50,4,275,Sense and Sensibility (1995),Drama;Romance,0.0012158649042248726,178
+102,pagerank,0.50,5,9,Dead Man Walking (1995),Drama,0.0011652065441012383,182
+102,pagerank,0.50,6,318,Schindler's List (1993),Drama;War,0.0011572219664230943,224
+102,pagerank,0.50,7,333,"Game, The (1997)",Mystery;Thriller,0.001151369884610176,119
+102,pagerank,0.50,8,64,"Shawshank Redemption, The (1994)",Drama,0.0011496057268232107,228
+102,pagerank,0.50,9,15,Mr. Holland's Opus (1995),Drama,0.0010986614506691694,160
+102,pagerank,0.50,10,22,Braveheart (1995),Action;Drama;War,0.001097924425266683,214
+10,ppr,0.50,1,181,Return of the Jedi (1983),Action;Adventure;Romance;Sci-Fi;War,0.0005302493809722364,339
+10,ppr,0.50,2,172,"Empire Strikes Back, The (1980)",Action;Adventure;Drama;Romance;Sci-Fi;War,0.0004708645574282855,261
+10,ppr,0.50,3,318,Schindler's List (1993),Drama;War,0.00045713732833974063,224
+10,ppr,0.50,4,79,"Fugitive, The (1993)",Action;Thriller,0.00041991841862909496,230
+10,ppr,0.50,5,258,Contact (1997),Drama;Sci-Fi,0.0004133617621846497,307
+10,ppr,0.50,6,173,"Princess Bride, The (1987)",Action;Adventure;Comedy;Romance,0.000412171269999817,222
+10,ppr,0.50,7,89,Blade Runner (1982),Film-Noir;Sci-Fi,0.00038190855411812663,193
+10,ppr,0.50,8,183,Alien (1979),Action;Horror;Sci-Fi;Thriller,0.0003805617743637413,194
+10,ppr,0.50,9,204,Back to the Future (1985),Comedy;Sci-Fi,0.0003784149303101003,203
+10,ppr,0.50,10,96,Terminator 2: Judgment Day (1991),Action;Sci-Fi;Thriller,0.000352097034920007,196
+102,ppr,0.50,1,100,Fargo (1996),Crime;Drama;Thriller,0.000575365440454334,377
+102,ppr,0.50,2,22,Braveheart (1995),Action;Drama;War,0.0004390270623844117,214
+102,ppr,0.50,3,64,"Shawshank Redemption, The (1994)",Drama,0.00041687802877277136,228
+102,ppr,0.50,4,69,Forrest Gump (1994),Comedy;Romance;War,0.000396955554606393,206
+102,ppr,0.50,5,357,One Flew Over the Cuckoo's Nest (1975),Drama,0.00038211868377402425,202
+102,ppr,0.50,6,318,Schindler's List (1993),Drama;War,0.0003806190798059106,224
+102,ppr,0.50,7,12,"Usual Suspects, The (1995)",Crime;Thriller,0.0003715217171702534,205
+102,ppr,0.50,8,483,Casablanca (1942),Drama;Romance;War,0.00036135304253548384,197
+102,ppr,0.50,9,191,Amadeus (1984),Drama;Mystery,0.00035802420461550355,194
+102,ppr,0.50,10,28,Apollo 13 (1995),Action;Drama;Thriller,0.00035485922126099467,175
+10,mf,,1,318,Schindler's List (1993),Drama;War,4.866032123565674,224
+10,mf,,2,132,"Wizard of Oz, The (1939)",Adventure;Children's;Drama;Musical,4.697700500488281,156
+10,mf,,3,694,Persuasion (1995),Romance,4.663751125335693,28
+10,mf,,4,515,"Boot, Das (1981)",Action;Drama;War,4.663529396057129,153
+10,mf,,5,963,Some Folks Call It a Sling Blade (1993),Drama;Thriller,4.62660026550293,28
+10,mf,,6,169,"Wrong Trousers, The (1993)",Animation;Comedy,4.625646114349365,90
+10,mf,,7,427,To Kill a Mockingbird (1962),Drama,4.602057933807373,166
+10,mf,,8,378,Miracle on 34th Street (1994),Drama,4.597506523132324,47
+10,mf,,9,633,"Christmas Carol, A (1938)",Drama,4.578948974609375,41
+10,mf,,10,136,Mr. Smith Goes to Washington (1939),Drama,4.576405048370361,80
+102,mf,,1,408,"Close Shave, A (1995)",Animation;Comedy;Thriller,4.327273368835449,85
+102,mf,,2,1137,Beautiful Thing (1996),Drama;Romance,4.2104010581970215,19
+102,mf,,3,543,"Mis�rables, Les (1995)",Drama;Musical,4.135415077209473,9
+102,mf,,4,1449,Pather Panchali (1955),Drama,4.108183860778809,7
+102,mf,,5,1203,Top Hat (1935),Comedy;Musical;Romance,4.059318542480469,10
+102,mf,,6,169,"Wrong Trousers, The (1993)",Animation;Comedy,4.0593132972717285,90
+102,mf,,7,718,In the Bleak Midwinter (1995),Comedy,4.046734809875488,11
+102,mf,,8,1524,Kaspar Hauser (1993),Drama,4.040817737579346,7
+102,mf,,9,1502,Naked in New York (1994),Comedy;Romance,4.039639949798584,0
+102,mf,,10,613,My Man Godfrey (1936),Comedy,4.034715175628662,17
+10,ppr,0.85,1,181,Return of the Jedi (1983),Action;Adventure;Romance;Sci-Fi;War,0.0023154807277023792,339
+10,ppr,0.85,2,258,Contact (1997),Drama;Sci-Fi,0.0019542945083230734,307
+10,ppr,0.85,3,172,"Empire Strikes Back, The (1980)",Action;Adventure;Drama;Romance;Sci-Fi;War,0.001901610172353685,261
+10,ppr,0.85,4,318,Schindler's List (1993),Drama;War,0.0017219606088474393,224
+10,ppr,0.85,5,79,"Fugitive, The (1993)",Action;Thriller,0.0016818030271679163,230
+10,ppr,0.85,6,173,"Princess Bride, The (1987)",Action;Adventure;Comedy;Romance,0.0016391898971050978,222
+10,ppr,0.85,7,204,Back to the Future (1985),Comedy;Sci-Fi,0.00149924389552325,203
+10,ppr,0.85,8,237,Jerry Maguire (1996),Drama;Romance,0.0014673807891085744,217
+10,ppr,0.85,9,89,Blade Runner (1982),Film-Noir;Sci-Fi,0.001467065536417067,193
+10,ppr,0.85,10,183,Alien (1979),Action;Horror;Sci-Fi;Thriller,0.0014668665826320648,194
+102,ppr,0.85,1,100,Fargo (1996),Crime;Drama;Thriller,0.002552925143390894,377
+102,ppr,0.85,2,64,"Shawshank Redemption, The (1994)",Drama,0.0016687266761437058,228
+102,ppr,0.85,3,22,Braveheart (1995),Action;Drama;War,0.0016426161164417863,214
+102,ppr,0.85,4,318,Schindler's List (1993),Drama;War,0.0015940121375024319,224
+102,ppr,0.85,5,69,Forrest Gump (1994),Comedy;Romance;War,0.0015422222204506397,206
+102,ppr,0.85,6,357,One Flew Over the Cuckoo's Nest (1975),Drama,0.0014981538988649845,202
+102,ppr,0.85,7,12,"Usual Suspects, The (1995)",Crime;Thriller,0.0014923597918823361,205
+102,ppr,0.85,8,237,Jerry Maguire (1996),Drama;Romance,0.001463662483729422,217
+102,ppr,0.85,9,483,Casablanca (1942),Drama;Romance;War,0.0014427462592720985,197
+102,ppr,0.85,10,191,Amadeus (1984),Drama;Mystery,0.0014252816326916218,194

@@ -1,0 +1,242 @@
+HW6 offline evaluation — TensorFlow.js 4.22.0, backend wasm, node v22.22.0
+
+=== 1. Data and split ===
+users 943, movies 1682, ratings 100000; sparsity 93.70% of 943 x 1682
+split per user by timestamp: train 79619 (79.6%), val 9596 (9.6%), test 10785 (10.8%); users skipped 0
+users in train 943; movies in train (candidate pool) 1611
+positive training ratings (>= 4.0): 45602 of 79619 (57.3%); distinct positive pairs 45602
+users with a positive training edge: 942
+
+=== 2. Graph ===
+Graph built: 2,554 nodes reported.
+nodes 2554 = 943 users + 1611 movies (no padding node); positive edges 45602 (each followed in both directions)
+zero-degree users: 1 (685); zero-degree movies: 253
+user degree: min 0, median 31, max 298; movie degree: min 0, median 7, max 449
+R density 3.00% of 943 x 1611
+zero-degree user 685: 16 training ratings, max 3
+
+=== 3. Verification ===
+page self-checks: pass 14, fail 0, pending 0
+  PASS  reference graph: uniform alpha=0.85 matches readme 4.1 values — C>A>B>D; produced by student pageRank(alpha, {transition: REFERENCE_GRAPH.transition}), iterations 28
+  PASS  reference graph: restart at A alpha=0.85 matches readme 4.1 values — A>C>B>D (D stays 0); produced by student personalizedPageRank(seedNode, alpha, {transition: REFERENCE_GRAPH.transition})
+  PASS  row normalization: every nonzero-degree row sums to 1 — 6 positive-degree row(s) sum to 1; 2 dangling row(s) are zero
+  PASS  restart distributions: nonnegative and summing to 1 — uniform + one-hot over 4 nodes
+  PASS  iterations preserve total probability (sum approx 1) — sum = 1.0000002682 over 3 synthetic nodes (graph.js)
+  PASS  stationary scores are nonnegative — 3 scores nonnegative (graph.js)
+  PASS  one extra update produces approximately the same distribution — L1 = 7.972e-7
+  PASS  zero-degree node fixture preserves probability mass — danglingMask [false,true,false,false,true]; mass 1.00000022 / 1.00000000
+  PASS  matrix orientation: probability collects at the pointed-to node, not the source — p = [0.486486, 0.256757, 0.256757]
+  PASS  recommendTopK: excludes previously rated movies and breaks ties by ascending id — 10 eligible items for user 1
+  PASS  graph mapping: node count equals observed users plus observed movies — 2554 nodes = 943 users + 1611 movies
+  PASS  PPR batch equals single-user PPR; an out-of-range restart index throws — max |batch - single| = 0.00e+0; index 99 rejected
+  PASS  MF: loaded HW5 checkpoint reproduces its recorded validation RMSE — epoch 16, validation RMSE 0.9731 (SGD)
+  PASS  public surface: every required name is defined — 10 functions + ALPHA_GRID + MF_INFO
+[3a] MovieLens transition: 2300 positive-degree rows sum to 1 (max error 8.0e-15), 254 zero-degree rows are all zero
+[3b] global PageRank alpha 0.50: 19 iterations, residual 5.59e-7, converged true, sum 1.0000001, min 2.06e-4
+[3b] global PageRank alpha 0.70: 36 iterations, residual 7.76e-7, converged true, sum 1.0000000, min 1.26e-4
+[3b] global PageRank alpha 0.85: 78 iterations, residual 9.42e-7, converged true, sum 1.0000006, min 6.42e-5
+[3b] global PageRank alpha 0.95: 261 iterations, residual 9.97e-7, converged true, sum 0.9999999, min 2.16e-5
+[3b] PPR user 10 (node 9) alpha 0.50: 21 iterations, residual 9.57e-7, converged true, sum 1.0000000, own-node score 0.5042 (restart prob 0.50)
+[3b] PPR user 10 (node 9) alpha 0.70: 41 iterations, residual 8.98e-7, converged true, sum 1.0000000, own-node score 0.3053 (restart prob 0.30)
+[3b] PPR user 10 (node 9) alpha 0.85: 90 iterations, residual 9.32e-7, converged true, sum 1.0000002, own-node score 0.1545 (restart prob 0.15)
+[3b] PPR user 10 (node 9) alpha 0.95: 284 iterations, residual 9.79e-7, converged true, sum 1.0000001, own-node score 0.0528 (restart prob 0.05)
+[3c] PPR seeded at zero-degree user 685: sum 1.0000000, mass on the seed 1.0000000, 1 iteration(s) — the walk cannot leave, all movie scores are 0
+[3c] 253 zero-degree movies: PPR(user 10) score max 0; global PageRank score 6.415e-5 each (restart share only), below every positive-degree movie (min 7.171e-5)
+[3d] global PageRank alpha 0.85, float64 plain JS vs TF.js: 78 vs 78 iterations, max |diff| 2.69e-9
+[3e] starter adapter: personalizedPageRank(10) restarts at node 10 = user 11, not user 10 (node 9); highest user-node mass at node 10 (user 11). Fixed adapter: own-node mass 0.1545
+[3e] with the raw id, user 943 would map to node 943, which is NOT a user node (it is the first movie node)
+[3f] live tensors before / after 5 rounds of PageRank + PPR + batched PPR + MF Top-10: 12 / 12 (page start: 0; the difference is the cached graph tensors and the MF variables)
+
+=== 4. Alpha selection on validation (PPR, Recall@10) ===
+alpha 0.50: validation Recall@10 0.1145 over 846 users; PPR iterations 21-22, max residual 9.98e-7, all converged true  <- selected
+alpha 0.70: validation Recall@10 0.1048 over 846 users; PPR iterations 41-42, max residual 9.93e-7, all converged true
+alpha 0.85: validation Recall@10 0.0900 over 846 users; PPR iterations 89-92, max residual 1.00e-6, all converged true
+alpha 0.95: validation Recall@10 0.0738 over 846 users; PPR iterations 275-326, max residual 1.00e-6, all converged true
+selected alpha 0.50 (validation only, ties toward the smaller alpha); sweep time 805 s on wasm
+validation cohort 846 of 943 users with validation ratings; excluded: 97 without an eligible relevant movie, 1 without a positive training edge; 4 relevant ratings on movies absent from train
+for reference, validation Recall@10 of the other methods: popularity 0.0698, global PageRank (alpha 0.50) 0.0641, MF 0.0498
+
+=== 5. Test evaluation (shared cohort, alpha 0.50 for PageRank and PPR) ===
+test cohort 861 of 943 users with test ratings; excluded: 82 users without an eligible relevant movie (of them 1 without a positive training edge); 13 relevant test ratings on 13 movies absent from train
+method      Recall@10  users with a hit  hits/relevant  mean list pop.  distinct movies  slots in top-100 pop.  slots pop<=5
+popularity  0.0760     275               429/5142       272.0           82               100.0%                 0.0%
+pagerank    0.0797     268               417/5142       257.8           74               98.0%                  0.0%
+ppr         0.1122     340               554/5142       244.2           138              94.6%                  0.0%
+mf          0.0443     195               265/5142       116.2           593              42.4%                  3.6%
+HW5 report for comparison: MF Recall@10 0.0443 over 861 users (HW5 cohort: users with a relevant test movie in the train pool)
+mean common movies per user between methods (of 10): pop-PR 6.93, pop-PPR 6.39, PR-PPR 5.61, PPR-MF 1.29, pop-MF 1.28
+per user, PPR vs MF recall: PPR higher 261, MF higher 72, both 0 468, equal and > 0 60
+users for whom PPR and MF each find a relevant movie the other misses: 103
+recall by number of positive training ratings:
+  <20    users 262  popularity 0.0777  PageRank 0.0972  PPR 0.1524  MF 0.0278
+  20-49  users 285  popularity 0.0741  PageRank 0.0766  PPR 0.1004  MF 0.0548
+  50-99  users 179  popularity 0.0853  PageRank 0.0705  PPR 0.1003  MF 0.0543
+  >=100  users 135  popularity 0.0643  PageRank 0.0645  PPR 0.0748  MF 0.0407
+[check] PPR Recall@10 from a float64 plain-JS power iteration: 0.1122 (TF.js 0.1122); identical Top-10 lists for 861 of 861 users (4 s)
+[check] 34440 test slots (4 methods x 861 users): 0 already rated in train/val, 0 outside the training pool; every list has 10 items: true
+[check] PPR lists that needed a zero-score filler: 0
+
+=== 6. The two users from HW5: 10 and 102 (test Top-10, alpha 0.50) ===
+user 10: in cohort true; train 147 ratings (mean 4.22), 133 positive = graph degree 133; train+val 165
+  top genres among his positive train+val ratings: Drama 66, Comedy 33, Romance 30
+  mean training popularity of his positive train movies: 110.5
+  examples of 5-star / 4-star train movies: Star Wars (1977) [5]; Fargo (1996) [5]; Godfather, The (1972) [5]; Pulp Fiction (1994) [5]; Braveheart (1995) [5]; Usual Suspects, The (1995) [5]; One Flew Over the Cuckoo's Nest (1975) [5]; Casablanca (1942) [5]
+  test period: 19 ratings, relevant (>= 4) eligible: 17: 39 Steps, The (1935); City Hall (1996); Miami Rhapsody (1995); Clueless (1995); Persuasion (1995); To Wong Foo, Thanks for Everything! Julie Newmar (1995); Ref, The (1994); Alice in Wonderland (1951); Sex, Lies, and Videotape (1989); Tin Men (1987); Desperado (1995); Wizard of Oz, The (1939); Alien (1979); Little Women (1994); Cat on a Hot Tin Roof (1958); Mother (1996); Boogie Nights (1997)
+user 102: in cohort false; train 172 ratings (mean 2.64), 21 positive = graph degree 21; train+val 193
+  top genres among his positive train+val ratings: Sci-Fi 11, Action 10, Adventure 6
+  mean training popularity of his positive train movies: 150.8
+  examples of 5-star / 4-star train movies: Star Wars (1977) [4]; Raiders of the Lost Ark (1981) [4]; Silence of the Lambs, The (1991) [4]; Contact (1997) [4]; Back to the Future (1985) [4]; Alien (1979) [4]; Blade Runner (1982) [4]; Terminator, The (1984) [4]
+  test period: 23 ratings, relevant (>= 4) eligible: 0: 
+
+[popularity] user 10: recall 0/17, mean popularity 248.0, 7/10 share one of his top-3 genres, 10/10 in the 100 most popular
+   1. Return of the Jedi (1983) | Action, Adventure, Romance, Sci-Fi, War | score 339.0000 | pop 339
+   2. Contact (1997) | Drama, Sci-Fi | score 307.0000 | pop 307
+   3. Empire Strikes Back, The (1980) | Action, Adventure, Drama, Romance, Sci-Fi, War | score 261.0000 | pop 261
+   4. Air Force One (1997) | Action, Thriller | score 235.0000 | pop 235
+   5. Fugitive, The (1993) | Action, Thriller | score 230.0000 | pop 230
+   6. Scream (1996) | Horror, Thriller | score 226.0000 | pop 226
+   7. Schindler's List (1993) | Drama, War | score 224.0000 | pop 224
+   8. Princess Bride, The (1987) | Action, Adventure, Comedy, Romance | score 222.0000 | pop 222
+   9. Titanic (1997) | Action, Drama, Romance | score 219.0000 | pop 219
+  10. Jerry Maguire (1996) | Drama, Romance | score 217.0000 | pop 217
+
+[popularity] user 102: recall n/a, mean popularity 226.4, 1/10 share one of his top-3 genres, 10/10 in the 100 most popular
+   1. Fargo (1996) | Crime, Drama, Thriller | score 377.0000 | pop 377
+   2. Shawshank Redemption, The (1994) | Drama | score 228.0000 | pop 228
+   3. Schindler's List (1993) | Drama, War | score 224.0000 | pop 224
+   4. Jerry Maguire (1996) | Drama, Romance | score 217.0000 | pop 217
+   5. Braveheart (1995) | Action, Drama, War | score 214.0000 | pop 214
+   6. Forrest Gump (1994) | Comedy, Romance, War | score 206.0000 | pop 206
+   7. Usual Suspects, The (1995) | Crime, Thriller | score 205.0000 | pop 205
+   8. One Flew Over the Cuckoo's Nest (1975) | Drama | score 202.0000 | pop 202
+   9. Casablanca (1942) | Drama, Romance, War | score 197.0000 | pop 197
+  10. Amadeus (1984) | Drama, Mystery | score 194.0000 | pop 194
+[popularity] common movies between users 10 and 102: 2 of 10
+
+[pagerank] user 10: recall 0/17, mean popularity 240.8, 6/10 share one of his top-3 genres, 10/10 in the 100 most popular
+   1. Contact (1997) | Drama, Sci-Fi | score 2.375e-3 | pop 307
+   2. Titanic (1997) | Action, Drama, Romance | score 2.063e-3 | pop 219
+   3. Air Force One (1997) | Action, Thriller | score 2.003e-3 | pop 235
+   4. Return of the Jedi (1983) | Action, Adventure, Romance, Sci-Fi, War | score 1.989e-3 | pop 339
+   5. Scream (1996) | Horror, Thriller | score 1.868e-3 | pop 226
+   6. Liar Liar (1997) | Comedy | score 1.488e-3 | pop 182  <- rated 3 in test
+   7. Jerry Maguire (1996) | Drama, Romance | score 1.329e-3 | pop 217
+   8. Empire Strikes Back, The (1980) | Action, Adventure, Drama, Romance, Sci-Fi, War | score 1.318e-3 | pop 261
+   9. Rock, The (1996) | Action, Adventure, Thriller | score 1.308e-3 | pop 215
+  10. Independence Day (ID4) (1996) | Action, Sci-Fi, War | score 1.297e-3 | pop 207
+
+[pagerank] user 102: recall n/a, mean popularity 204.5, 1/10 share one of his top-3 genres, 10/10 in the 100 most popular
+   1. Fargo (1996) | Crime, Drama, Thriller | score 2.272e-3 | pop 377
+   2. Jerry Maguire (1996) | Drama, Romance | score 1.329e-3 | pop 217
+   3. Chasing Amy (1997) | Drama, Romance | score 1.266e-3 | pop 146
+   4. Sense and Sensibility (1995) | Drama, Romance | score 1.216e-3 | pop 178
+   5. Dead Man Walking (1995) | Drama | score 1.165e-3 | pop 182
+   6. Schindler's List (1993) | Drama, War | score 1.157e-3 | pop 224
+   7. Game, The (1997) | Mystery, Thriller | score 1.151e-3 | pop 119
+   8. Shawshank Redemption, The (1994) | Drama | score 1.150e-3 | pop 228
+   9. Mr. Holland's Opus (1995) | Drama | score 1.099e-3 | pop 160
+  10. Braveheart (1995) | Action, Drama, War | score 1.098e-3 | pop 214
+[pagerank] common movies between users 10 and 102: 1 of 10
+
+[ppr] user 10: recall 1/17, mean popularity 236.9, 6/10 share one of his top-3 genres, 10/10 in the 100 most popular
+   1. Return of the Jedi (1983) | Action, Adventure, Romance, Sci-Fi, War | score 5.302e-4 | pop 339
+   2. Empire Strikes Back, The (1980) | Action, Adventure, Drama, Romance, Sci-Fi, War | score 4.709e-4 | pop 261
+   3. Schindler's List (1993) | Drama, War | score 4.571e-4 | pop 224
+   4. Fugitive, The (1993) | Action, Thriller | score 4.199e-4 | pop 230
+   5. Contact (1997) | Drama, Sci-Fi | score 4.134e-4 | pop 307
+   6. Princess Bride, The (1987) | Action, Adventure, Comedy, Romance | score 4.122e-4 | pop 222
+   7. Blade Runner (1982) | Film-Noir, Sci-Fi | score 3.819e-4 | pop 193
+   8. Alien (1979) | Action, Horror, Sci-Fi, Thriller | score 3.806e-4 | pop 194  <- rated 5 in test
+   9. Back to the Future (1985) | Comedy, Sci-Fi | score 3.784e-4 | pop 203
+  10. Terminator 2: Judgment Day (1991) | Action, Sci-Fi, Thriller | score 3.521e-4 | pop 196
+
+[ppr] user 102: recall n/a, mean popularity 222.2, 2/10 share one of his top-3 genres, 10/10 in the 100 most popular
+   1. Fargo (1996) | Crime, Drama, Thriller | score 5.754e-4 | pop 377
+   2. Braveheart (1995) | Action, Drama, War | score 4.390e-4 | pop 214
+   3. Shawshank Redemption, The (1994) | Drama | score 4.169e-4 | pop 228
+   4. Forrest Gump (1994) | Comedy, Romance, War | score 3.970e-4 | pop 206
+   5. One Flew Over the Cuckoo's Nest (1975) | Drama | score 3.821e-4 | pop 202
+   6. Schindler's List (1993) | Drama, War | score 3.806e-4 | pop 224
+   7. Usual Suspects, The (1995) | Crime, Thriller | score 3.715e-4 | pop 205
+   8. Casablanca (1942) | Drama, Romance, War | score 3.614e-4 | pop 197
+   9. Amadeus (1984) | Drama, Mystery | score 3.580e-4 | pop 194
+  10. Apollo 13 (1995) | Action, Drama, Thriller | score 3.549e-4 | pop 175
+[ppr] common movies between users 10 and 102: 1 of 10
+
+[mf] user 10: recall 2/17, mean popularity 101.3, 10/10 share one of his top-3 genres, 4/10 in the 100 most popular
+   1. Schindler's List (1993) | Drama, War | score 4.8660 | pop 224
+   2. Wizard of Oz, The (1939) | Adventure, Children's, Drama, Musical | score 4.6977 | pop 156  <- rated 5 in test
+   3. Persuasion (1995) | Romance | score 4.6638 | pop 28  <- rated 5 in test
+   4. Boot, Das (1981) | Action, Drama, War | score 4.6635 | pop 153
+   5. Some Folks Call It a Sling Blade (1993) | Drama, Thriller | score 4.6266 | pop 28
+   6. Wrong Trousers, The (1993) | Animation, Comedy | score 4.6256 | pop 90
+   7. To Kill a Mockingbird (1962) | Drama | score 4.6021 | pop 166
+   8. Miracle on 34th Street (1994) | Drama | score 4.5975 | pop 47
+   9. Christmas Carol, A (1938) | Drama | score 4.5789 | pop 41
+  10. Mr. Smith Goes to Washington (1939) | Drama | score 4.5764 | pop 80
+
+[mf] user 102: recall n/a, mean popularity 25.5, 0/10 share one of his top-3 genres, 0/10 in the 100 most popular
+   1. Close Shave, A (1995) | Animation, Comedy, Thriller | score 4.3273 | pop 85
+   2. Beautiful Thing (1996) | Drama, Romance | score 4.2104 | pop 19
+   3. Misérables, Les (1995) | Drama, Musical | score 4.1354 | pop 9
+   4. Pather Panchali (1955) | Drama | score 4.1082 | pop 7
+   5. Top Hat (1935) | Comedy, Musical, Romance | score 4.0593 | pop 10
+   6. Wrong Trousers, The (1993) | Animation, Comedy | score 4.0593 | pop 90
+   7. In the Bleak Midwinter (1995) | Comedy | score 4.0467 | pop 11
+   8. Kaspar Hauser (1993) | Drama | score 4.0408 | pop 7
+   9. Naked in New York (1994) | Comedy, Romance | score 4.0396 | pop 0
+  10. My Man Godfrey (1936) | Comedy | score 4.0347 | pop 17
+[mf] common movies between users 10 and 102: 1 of 10
+user 10: PPR and MF lists share 1 of 10
+user 102: PPR and MF lists share 0 of 10
+
+=== 7. One factor at a time (readme 6.2) ===
+baseline: user 10, alpha 0.85 — mean popularity 239.0, 10/10 in top-100
+   1. Return of the Jedi (1983) | Action, Adventure, Romance, Sci-Fi, War | 2.315e-3 | pop 339
+   2. Contact (1997) | Drama, Sci-Fi | 1.954e-3 | pop 307
+   3. Empire Strikes Back, The (1980) | Action, Adventure, Drama, Romance, Sci-Fi, War | 1.902e-3 | pop 261
+   4. Schindler's List (1993) | Drama, War | 1.722e-3 | pop 224
+   5. Fugitive, The (1993) | Action, Thriller | 1.682e-3 | pop 230
+   6. Princess Bride, The (1987) | Action, Adventure, Comedy, Romance | 1.639e-3 | pop 222
+   7. Back to the Future (1985) | Comedy, Sci-Fi | 1.499e-3 | pop 203
+   8. Jerry Maguire (1996) | Drama, Romance | 1.467e-3 | pop 217
+   9. Blade Runner (1982) | Film-Noir, Sci-Fi | 1.467e-3 | pop 193
+  10. Alien (1979) | Action, Horror, Sci-Fi, Thriller | 1.467e-3 | pop 194
+change seed only: user 102, alpha 0.85 — mean popularity 226.4, 10/10 in top-100
+   1. Fargo (1996) | Crime, Drama, Thriller | 2.553e-3 | pop 377
+   2. Shawshank Redemption, The (1994) | Drama | 1.669e-3 | pop 228
+   3. Braveheart (1995) | Action, Drama, War | 1.643e-3 | pop 214
+   4. Schindler's List (1993) | Drama, War | 1.594e-3 | pop 224
+   5. Forrest Gump (1994) | Comedy, Romance, War | 1.542e-3 | pop 206
+   6. One Flew Over the Cuckoo's Nest (1975) | Drama | 1.498e-3 | pop 202
+   7. Usual Suspects, The (1995) | Crime, Thriller | 1.492e-3 | pop 205
+   8. Jerry Maguire (1996) | Drama, Romance | 1.464e-3 | pop 217
+   9. Casablanca (1942) | Drama, Romance, War | 1.443e-3 | pop 197
+  10. Amadeus (1984) | Drama, Mystery | 1.425e-3 | pop 194
+change alpha only: user 10, alpha 0.50 — mean popularity 236.9, 10/10 in top-100
+   1. Return of the Jedi (1983) | Action, Adventure, Romance, Sci-Fi, War | 5.302e-4 | pop 339
+   2. Empire Strikes Back, The (1980) | Action, Adventure, Drama, Romance, Sci-Fi, War | 4.709e-4 | pop 261
+   3. Schindler's List (1993) | Drama, War | 4.571e-4 | pop 224
+   4. Fugitive, The (1993) | Action, Thriller | 4.199e-4 | pop 230
+   5. Contact (1997) | Drama, Sci-Fi | 4.134e-4 | pop 307
+   6. Princess Bride, The (1987) | Action, Adventure, Comedy, Romance | 4.122e-4 | pop 222
+   7. Blade Runner (1982) | Film-Noir, Sci-Fi | 3.819e-4 | pop 193
+   8. Alien (1979) | Action, Horror, Sci-Fi, Thriller | 3.806e-4 | pop 194
+   9. Back to the Future (1985) | Comedy, Sci-Fi | 3.784e-4 | pop 203
+  10. Terminator 2: Judgment Day (1991) | Action, Sci-Fi, Thriller | 3.521e-4 | pop 196
+common: baseline vs change seed only: 2 of 10
+common: baseline vs change alpha only: 9 of 10
+common: change seed only vs change alpha only: 1 of 10
+
+=== 8. The starter's MF reference (Adam, L2 on the whole matrices) vs my HW5 checkpoint ===
+used for "mf": HW5 (getmanyan/llm4rec-hw5) trainMF, SGD, page defaults; checkpoint epoch 16, validation RMSE 0.9731, test RMSE 1.0261 (trained on cpu)
+the starter's reference trainer (hw6TrainMf) is evaluated separately (about 3 min on wasm):
+it collapses to the training mean; see analysis/reference_mf.txt, made with
+  node analysis/reference_mf.js > analysis/reference_mf.txt
+
+=== 9. Exports (the page's own exporters) ===
+Evaluation run complete — selected alpha 0.50 on validation; the test comparison used it.
+Two-user demonstration complete — users 10 and 102; one factor changes per comparison.
+verification.json: pass 14, fail 0, pending 0; results.csv 10 rows; recommendations.csv 100 rows
+
+done, backend wasm
